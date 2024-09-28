@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "haskell.haskell",
+        "justusadam.language-haskell",
+        "czhang03.unicode-math-input",
+        "eamodio.gitlens"
+    ]
+}

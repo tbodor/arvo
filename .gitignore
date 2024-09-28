@@ -1,0 +1,6 @@
+.stack-work/
+*~
+.ipynb_checkpoints/
+__pycache__
+.idea
+.history

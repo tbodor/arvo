@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.12.0/.schema/devbox.schema.json",
+  "packages": [
+    "path:./flakes/vscodium#",
+    "stack@latest",
+    "cabal-install@latest",
+    "ghc@9.6.6",
+    "haskell-language-server@latest"
+  ],
+  "shell": {
+    "init_hook": [
+    ],
+    "scripts": {
+      "test": [ "stack test" ],
+      "ide": [ "codium ." ]
+    }
+  }
+}

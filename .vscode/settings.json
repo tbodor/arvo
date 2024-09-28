@@ -1,0 +1,10 @@
+{
+    "haskell.manageHLS": "PATH",
+    "files.autoSave": "afterDelay",
+    "vim.textwidth": 120,
+    "editor.fontLigatures": true,
+    "editor.fontFamily": "FiraCode Nerd Font, Menlo, Monaco, 'Courier New', monospace",
+    "editor.tabSize": 2,
+    "editor.minimap.enabled": false,
+    "haskell.plugin.semanticTokens.globalOn": true
+}
