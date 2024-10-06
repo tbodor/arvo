@@ -1,0 +1,5 @@
+
+let s = λx.λy.λz.x z (y z);
+let k = λx.λy.x;
+
+s k k

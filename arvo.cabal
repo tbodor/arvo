@@ -26,11 +26,9 @@ source-repository head
 library
   exposed-modules:
       Environment
-      Eval
       Interpreter
       Parser
       Repl
-      SimpleRepl
       Syntax
   other-modules:
       Paths_arvo
@@ -43,7 +41,9 @@ library
       base >=4.7 && <5
     , haskeline
     , megaparsec
+    , mtl
     , repline
+    , text
   default-language: Haskell2010
 
 executable arvo-exe
@@ -60,7 +60,9 @@ executable arvo-exe
     , base >=4.7 && <5
     , haskeline
     , megaparsec
+    , mtl
     , repline
+    , text
   default-language: Haskell2010
 
 test-suite arvo-test
@@ -84,5 +86,7 @@ test-suite arvo-test
     , hspec-discover
     , hspec-megaparsec
     , megaparsec
+    , mtl
     , repline
+    , text
   default-language: Haskell2010

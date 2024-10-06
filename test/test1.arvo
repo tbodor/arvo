@@ -1,0 +1,5 @@
+
+let s x y z = x z (y z);
+let k x y = x;
+
+s k k

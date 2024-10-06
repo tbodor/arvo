@@ -24,6 +24,8 @@ dependencies:
 - megaparsec
 - repline
 - haskeline
+- mtl
+- text
 
 ghc-options:
 - -Wall
