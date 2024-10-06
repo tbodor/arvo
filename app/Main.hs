@@ -1,6 +1,7 @@
 module Main (main) where
 
-import Hello
+import Repl (repl)
+-- import SimpleRepl (repl)
 
 main :: IO ()
-main = putStrLn $ hello "world"
+main = repl

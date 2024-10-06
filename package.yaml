@@ -21,6 +21,10 @@ description:         Please see the README on GitHub at <https://github.com/tbod
 
 dependencies:
 - base >= 4.7 && < 5
+- megaparsec
+- repline
+- haskeline
+- pretty-simple
 
 ghc-options:
 - -Wall
@@ -59,4 +63,5 @@ tests:
     - arvo
     - hspec
     - hspec-discover
+    - hspec-megaparsec
     - QuickCheck
