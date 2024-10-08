@@ -3,6 +3,7 @@
         "haskell.haskell",
         "justusadam.language-haskell",
         "czhang03.unicode-math-input",
-        "eamodio.gitlens"
+        "eamodio.gitlens",
+        "visortelle.haskell-spotlight"
     ]
 }
