@@ -33,19 +33,34 @@ or referring to external documentation.
   [wsl2]
   memory=16GB
   ```
+
+- Start a WSL shell (steps from here on are all in WSL)
+
+- Update the distribution:
+  ```bash
+  sudo apt update
+  sudo apt upgrade
+  ```
   
 - Install devbox (see: https://www.jetify.com/devbox/docs/installing_devbox/), but TL;DR version is:
   ```bash
   curl -fsSL https://get.jetify.com/devbox | bash
   ```
  
-- (Optional) Install direnv - see [Appendix A](#appendix-a-using-direnv).
-
 - Check out the source:
   ```bash
-  git clone ...
+  git clone https://github.com/tbodor/arvo.git
   cd arvo
   ```
+
+- Start the devbox shell now. First time you run devbox it will download all
+  the dependencies and this may take a while. It's best to run the shell
+  manually the first time, and then proceed to install and allow direnv.
+  ```bash
+  devbox shell
+  ```
+
+- (Optional, recommended) Install direnv - see [Appendix A](#appendix-a-using-direnv).
 
 - If direnv is installed, on entry to the project directory you may get a message. Allow direnv to run the `.envrc` file.
   > direnv: error /.../.envrc is blocked. Run `direnv allow` to approve its content
@@ -53,12 +68,7 @@ or referring to external documentation.
   direnv allow
   ```
 
-- If not using direnv, start the devbox shell now (not needed if direnv is installed and allowed for the project directory):
-  ```bash
-  devbox shell
-  ```
-
-- Verify the installation (should compile and run without errors):
+- Verify the installation (will take a while the first time, but should compile and run without errors):
   ```bash
   stack run
   stack test
