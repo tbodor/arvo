@@ -12,7 +12,7 @@
     ],
     "scripts": {
       "test": [ "stack test" ],
-      "ide": [ "codium ." ]
+      "ide": [ "DONT_PROMPT_WSL_INSTALL=1 codium ." ]
     }
   }
 }
