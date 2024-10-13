@@ -2,7 +2,7 @@
   inputs = {
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
     flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs";
 #    flake-utils.follows = "nix-vscode-extensions/flake-utils";
 #    nixpkgs.follows = "nix-vscode-extensions/nixpkgs";
   };
