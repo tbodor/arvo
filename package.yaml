@@ -24,7 +24,6 @@ dependencies:
 - megaparsec
 - repline
 - haskeline
-- pretty-simple
 
 ghc-options:
 - -Wall

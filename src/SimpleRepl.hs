@@ -7,7 +7,6 @@ import GHC.IO.Handle
 import GHC.IO.Handle.FD (stdout)
 import Eval (eval)
 import Parser (parse)
-import Text.Pretty.Simple ( pPrintLightBg )
 
 
 repl :: IO ()
@@ -25,4 +24,4 @@ evaluate :: String -> IO ()
 evaluate expr = 
   case parse expr of
     Left err -> print err
-    Right term -> pPrintLightBg (eval [] term)
+    Right term -> print (eval [] term)
