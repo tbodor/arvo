@@ -26,6 +26,7 @@
             extensions.vscode-marketplace.vscodevim.vim
             extensions.vscode-marketplace.czhang03.unicode-math-input
             extensions.vscode-marketplace.eamodio.gitlens
+            extensions.vscode-marketplace.vsls-contrib.codetour
           ];
         };
 

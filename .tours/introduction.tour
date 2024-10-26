@@ -1,0 +1,227 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Introduction",
+  "steps": [
+    {
+      "file": "src/Syntax.hs",
+      "description": "- Module Syntax defines the abstract syntax tree (AST) for our language.\n- It exports the `Name` and `Term` types.\n- The `Term` type is exported with all data constructors.",
+      "line": 1,
+      "title": "Module Syntax"
+    },
+    {
+      "file": "src/Syntax.hs",
+      "description": "The language is based on lambda calculus, so the terms are the same: variables, abstractions and applications.",
+      "line": 9,
+      "selection": {
+        "start": {
+          "line": 9,
+          "character": 1
+        },
+        "end": {
+          "line": 13,
+          "character": 1
+        }
+      },
+      "title": "Term"
+    },
+    {
+      "file": "src/Syntax.hs",
+      "description": "Variables are references to function parameters. They only have meaning within a function body.",
+      "line": 10,
+      "title": "Variable"
+    },
+    {
+      "file": "src/Syntax.hs",
+      "description": "- Abstractions (lambdas) are function definitions (but without a function name).\n- Lambdas in our language have (bind) only one parameter (given by `Name`).\n- The body of the function is another `Term`",
+      "line": 11,
+      "title": "Lambda"
+    },
+    {
+      "file": "src/Syntax.hs",
+      "description": "Applications are function calls. First `Term` is the function to call, and the second `Term` is the (single) argument.",
+      "line": 12,
+      "title": "Application"
+    },
+    {
+      "file": "src/Syntax.hs",
+      "description": "- A Show instance for a type (`Term` here) is like implementing a `toString` method in Java.\n- It's essentially an implementation of an interface called `Show` that has a single function `show`.\n- The `show` function here has type `Term -> String`, taking a value of type `Term` and returning a String\n- The implementation is \"by cases\", for each of the three possible values of `Term`: variables, lambdas, and applications",
+      "line": 16,
+      "title": "Show"
+    },
+    {
+      "file": "src/Interpreter.hs",
+      "description": "Module `Interpreter` defines the interpreter for out language",
+      "line": 1,
+      "title": "Interpreter"
+    },
+    {
+      "file": "src/Interpreter.hs",
+      "description": "- The interpreter evaluates `Term`s of our language to `Value`s\n- There is really only one value in the language, and that is a *closure*\n- Closures are function values including their static environment - all variable bindings in scope",
+      "line": 15,
+      "title": "Value"
+    },
+    {
+      "file": "src/Interpreter.hs",
+      "description": "Neutral values are values that cannot be evaluated or cause evaluation. They are used as part of the *normalisation* algorithm, to convert values back to terms in normal form. More on this in a future presentation.",
+      "line": 20,
+      "title": "Neutral"
+    },
+    {
+      "file": "src/Interpreter.hs",
+      "description": "This is the evaluator/interpreter function. It takes an environment and a term and returns a value. The initial environment is often empty, but can be prepopulated by predefined functions from \"global\" scope. Without input environment we would only be able to evaluate closed terms. The environment needs to define any free variables that appear in an expression.",
+      "line": 28,
+      "title": "Evaluator"
+    },
+    {
+      "file": "src/Interpreter.hs",
+      "description": "- A variable reference is evaluated by looking up its name in the current environment.\n- It is an error to reference an unbound variable.\n- Error handling here is not ideal as it will terminate the interpreter (exit to shell). Ideally we would be able to report the error and continue evaluating the next expression.",
+      "line": 29,
+      "title": "Evaluate variable"
+    },
+    {
+      "file": "src/Interpreter.hs",
+      "description": "A lambda (function definition) evaluates to a closure, capturing the current static environment, corresponding to the function's lexical scope (visible variables at the point of the definition).",
+      "line": 32,
+      "title": "Evaluate lambda"
+    },
+    {
+      "file": "src/Interpreter.hs",
+      "description": "An application is evaluated in three stages:\n  - First, the function term is evaluated\n  - Then the argument term is evaluated\n  - And, finally, the function is called, passing the argument. The call (or application) is delegated to the `apply` function below.",
+      "line": 33,
+      "title": "Evaluate application"
+    },
+    {
+      "file": "src/Interpreter.hs",
+      "description": "Here we evaluate the body of a lambda abstraction in a new local environment, constructed by extending the function's static environment, captured in the closure. The additional binding is from the lambda's formal parameter to the actual argument in the call (application) expression.",
+      "line": 39,
+      "title": "Apply"
+    },
+    {
+      "file": "src/Interpreter.hs",
+      "description": "Applying a neutral value yields another neutral value corresponding to the application. This is part of the normalisation by evaluation algorithm below, to be covered in a future presentation.",
+      "line": 42,
+      "title": "Normalisation"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "Module containing a simple lambda calculus parser, implemented using parser combinators from the `megaparsec` library.",
+      "line": 1,
+      "title": "Parser"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "Main parser type, parameterised by the type of the values that the individual parser combinators will return. So, it's really `Parser a` - there's an implicit parameter (`Parsec` takes three parameters, only two are supplied, so the third is missing)\n\nFirst of the two parameters supplied are:\n  1. The custom error type, which we are not using, hence Void\n  2. The type of input values to be parsed. Here we use Haskell `String`, which is an alias for a list of Char: `[Char]`. This is not the most efficient choice, but it's the simplest. For a production parser one might use `Text` instead.",
+      "line": 20,
+      "title": "Parser type"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "This is the space lexical analyser, which consumes and discards non-significant spaces. It can also handle single and multi line comments, including nested comments, but out language currently does not support comments, so both of those handlers are `empty`.",
+      "line": 29,
+      "title": "Spaces"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "Keyword parser is basically a parser for strings that are equal to some value (here passed in as the `keyword` parameter).\n\nThe `notFollowedBy alphaNumChar` is a predicate that prevents parsing keywords when they are a prefix in a longer identifier. For example, we would not want to recognise the `let` keyword in identifier named `letter`.",
+      "line": 38,
+      "title": "Reserved"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "Parser for identifiers (that are not keywords). When an identifier turns out to be reserved, this parser will report an error.",
+      "line": 42,
+      "title": "Identifier"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "List of reserved identifiers (keywords) that are known to the parser. Currently that's just the lambda (and a backslash, which is equivalent and allows defining functions when unicode is inconvenient). The backslash here is escaped by another backslash so Haskell compiler will leave it alone.",
+      "line": 51,
+      "title": "Keywords"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "Parser for the lambda symbol (or its alternative non-unicode alias, the backslash).",
+      "line": 55,
+      "title": "Lambda"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "Parser for variables. It is implemented using the parser for identifiers and then wrapped into a Variable instance of the Term data type. Note the `<$>` operator. Hover over the operator to see what it means (it's basically a `map` that applies the Variable constructor function to the return of the identifier parser, which is the String representing the identifier name).\n\nThe identifier parser is of type `Parser String`, so the Variable constructor will be applied to the underlying String, and the return value will be of type `Parser Term` (which the nested `Term` having the value `Variable name`).",
+      "line": 60,
+      "title": "Variable"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "Terms are abstractions or applications (variables are handled as a special case of application to avoid left recursion).",
+      "line": 62,
+      "title": "Term"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "Parser for the lambda abstraction (function definition). It parses an identifier (parameter name) between a lambda symbol and a `.`:, like this: `λ<name>.`, and then all that followed by the body, which is another term. The entire thing is then mapped over using the `Lambda` constructor, similar to the `Variable` above.\n\nThis is another way to write the same thing:\n```haskell\nabstraction = do\n  _ <- lambda\n  parameter <- identifier\n  _ <- symbol \".\"\n  body <- term\n  return (Lambda parameter body)\n```\n\nNote explcit sequencing in the `do` block: first we parse the lambda symbol (and throw it away, it's just a marker, we don't need to keep it, so we 'assign' it to '_' placeholder - this is optional, but we get a warning if we don't explicitly throw it away like this). Then we parse the identifier and store the resulting String in a new variable called `parameter`. Then skip the `.`, and parse the body term. Finally construct and return the `Lambda` term we just parsed.",
+      "line": 73,
+      "title": "Abstraction"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "Application parser handles one or more term separated by spaces and constructs a chain of applications using the left fold function (in fact foldl1, which assumes that the list of terms has at least one element, so we do not need to supply the initial default element).\n\nA chain of applications like `a b c` will be parsed into `Application (Application a b) c`.\n\nThe `sepBy1` is a parser combinator that combines an arbitrary parser (here the one parsing abstractions, variables and parethesised terms), with a separator parser (where `space`) and applies them multiple times, as long as there is some input that the parsers will match. Note that the `sepBy` is applied in an infix form (using the backquotes). We could have also applied it in the usual prefix form like this: `sepBy1 (abstraction <|> variable <|> parens term) space`.",
+      "line": 70,
+      "title": "Application"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "Parse something parenthesised. Note the missing implicit parameter: `parens` is a function taking a parser and returning a parser, but here there is no declared input parameter in the implementation. Also, `between` takes three parametres, an `open` and `close` parsers and the parser for a thing delimited by open and close. This definition is in an eta-reduced form, but could also be written eta-expanded, like this:\n\n```haskell\nparens p = between (symbol \"(\") (symbol \")\") p\n```\n",
+      "line": 73,
+      "title": "Parentheses"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "Parser for `let` expressions (to be defined)",
+      "line": 76,
+      "title": "Let"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "Parser for top level declarations (to be defined)",
+      "line": 93,
+      "title": "Let declaration"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "Parser entry points to parse a single term, or a module. The rawParse is used only for testing.",
+      "selection": {
+        "start": {
+          "line": 111,
+          "character": 1
+        },
+        "end": {
+          "line": 123,
+          "character": 1
+        }
+      },
+      "title": "Parser entry point"
+    },
+    {
+      "file": "src/Repl.hs",
+      "description": "This module contains an implementation of the \"REPL\" for our language. REPL stands for read-evaluate-print-loop. Here we use a library called `repline` to implement an interactive user interface that supports line editing, history, tab completion, prompt, special commands, etc. The implementation follows closely the examples from the `repline` documentation here: https://hackage.haskell.org/package/repline-0.4.2.0/docs/System-Console-Repline.html. We will not go into detail on how this works in this tour.",
+      "line": 5
+    },
+    {
+      "file": "app/Main.hs",
+      "description": "The REPL is invoked from the application main function. Start the interactive evaluator like this:\n>> stack run",
+      "line": 6
+    },
+    {
+      "file": "test/ParserSpec.hs",
+      "description": "A few simple parser tests",
+      "line": 1
+    },
+    {
+      "file": "test/EvalSpec.hs",
+      "description": "A few simple evaluator tests",
+      "line": 1
+    }
+  ],
+  "ref": "let-start",
+  "isPrimary": true
+}
