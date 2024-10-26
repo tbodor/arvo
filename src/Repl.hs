@@ -13,13 +13,14 @@ import Data.Foldable (foldl')
 import Data.List (isPrefixOf)
 import Data.Maybe (isNothing)
 import Data.Version (showVersion)
-import Interpreter (Environment, Value, normalise, uneval, eval)
+import Interpreter (Value, normalise, uneval, eval)
 import Parser (parseModule)
 import qualified Parser (keywords)
 import Paths_arvo (version)
 import Syntax (Name, Term)
 import System.Console.Haskeline.Completion
 import System.Console.Repline
+import Environment (Environment, extend, names, bindings, empty)
 
 
 -- | Interpreter state
@@ -29,7 +30,7 @@ data Interpreter = Interpreter
   }
 
 initInterpreter :: Interpreter
-initInterpreter = Interpreter []
+initInterpreter = Interpreter empty
 
 type Repl a = HaskelineT (StateT Interpreter IO) a
 
@@ -51,12 +52,12 @@ repl =
 exec :: FilePath -> String -> Repl ()
 exec file source = do
   interpreterState <- get
-  bindings <- handleError $ parseModule file source
-  let newState = interpreterState {termEnv = foldl' evalBinding (termEnv interpreterState) bindings}
+  declarations <- handleError $ parseModule file source
+  let newState = interpreterState {termEnv = foldl' evalBinding (termEnv interpreterState) declarations}
   put newState
 
   -- Show normal form of the last evaluated expression
-  case lookup "it" bindings of
+  case lookup "it" declarations of
     Nothing -> return ()
     Just value -> liftIO $ print $ normalise (termEnv newState) value
 
@@ -65,7 +66,7 @@ exec file source = do
 evalBinding :: Environment Value -> (Name, Term) -> Environment Value
 evalBinding env (name, term) = env'
   where
-    env' = (name, eval env term) : env
+    env' = extend name (eval env term) env
 
 handleError :: (Show err) => Either err a -> Repl a
 handleError (Right value) = return value
@@ -97,8 +98,8 @@ printEnvironment :: String -> Repl ()
 printEnvironment _ = do
   interpreterState <- get
   let env = termEnv interpreterState
-  let names = map fst env
-  liftIO $ mapM_ print [(name, uneval names value) | (name, value) <- env]
+  let bound = names env
+  liftIO $ mapM_ print [(name, uneval bound value) | (name, value) <- bindings env]
 
 -- Tab completion
 completer :: (MonadState Interpreter m) => (String -> m [Completion])
@@ -107,7 +108,7 @@ completer n = do
   let commands = map ((':' :) . fst) opts -- commands, with prepended activation prefix character (':')
   let keywords = filter (\kw -> isNothing (lookup kw replacements)) Parser.keywords
   env <- gets termEnv
-  let declarations = map fst env
+  let declarations = names env
   let completions = [(c, c) | c <- keywords ++ declarations ++ commands]
   return [Completion rep name False | (name, rep) <- replacements ++ completions, n `isPrefixOf` name]
 

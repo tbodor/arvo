@@ -26,6 +26,7 @@ dependencies:
 - haskeline
 - mtl
 - text
+- containers
 
 ghc-options:
 - -Wall

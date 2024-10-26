@@ -7,7 +7,7 @@ module Interpreter
   )
 where
 
-import Environment
+import Environment (extend, lookup, Environment)
 import Syntax (Name, Term (..))
 import Prelude hiding (lookup)
 
@@ -51,7 +51,7 @@ uneval :: [Name] -> Value -> Term
 uneval names (Closure e x b) = Lambda x' $ uneval (x':names) evaluatedBody
     where
       x' = fresh names x
-      env' = (x, Neutral (NVariable x')) : e
+      env' = extend x (Neutral (NVariable x')) e
       evaluatedBody = eval env' b
 
 uneval names (Neutral n) = unevalNeutral names n

@@ -39,6 +39,7 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
+    , containers
     , haskeline
     , megaparsec
     , mtl
@@ -58,6 +59,7 @@ executable arvo-exe
   build-depends:
       arvo
     , base >=4.7 && <5
+    , containers
     , haskeline
     , megaparsec
     , mtl
@@ -81,6 +83,7 @@ test-suite arvo-test
       QuickCheck
     , arvo
     , base >=4.7 && <5
+    , containers
     , haskeline
     , hspec
     , hspec-discover
