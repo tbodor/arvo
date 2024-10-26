@@ -1,0 +1,84 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Let",
+  "steps": [
+    {
+      "file": "src/Syntax.hs",
+      "description": "In this excercise we will extend the interpreter with a new expression of the form: `let x = e in b`, which will bind a variable (here `x` to the result of evaluating some expresson `e` and then evaluate the body of the `let` expression (here `b`), making the binding of `x` available in the `let` body.\n\nThere is a simple test case for `let` expressions in the [EvalSpec.hs](./test/EvalSpec.hs) test suite. You can run the tests and note that one test is currently failing:\n>> stack test\n\nNote also the warnings about some unused symbols while the tests are bing compiled. These are placeholders for the missing implementation. We will complete this soon. First, see the presentation slide on the `let` extension for more details on the semantics on the `let` expressions: https://tbodor.github.io/arvo/presentation/lambda.html#/slide-let.\n\nThen add the `Let` data constructor to the `Term` type. How many parameters should `Let` have? What are their types?",
+      "line": 12,
+      "title": "Let term"
+    },
+    {
+      "file": "src/Syntax.hs",
+      "description": "Once the `Let` constructor has been added, we will need to update all patterns that match on the `Term` type to support the additional syntax. Start with the `Show` instance here. Render the `Let` syntax tree as String. Do not forget to recursively call `show` to render subexpressions. Haskell type checker will also remind you.",
+      "line": 16,
+      "title": "Show let expressions"
+    },
+    {
+      "file": "test/EvalSpec.hs",
+      "description": "Let's have a quick look at that failing test. It's attempting to normalise (fully evaluate - to *normal form*) the expression `s k k` (remember the SKI combinators from the presentation?), where `s` and `k` are defined in two nested `let` expressions.\n\nThe test is expecting that `s k k` will evaluate to the identity function (here shown as `λz.z`). Of course `let` is not yet implemented in the parser so the call to `parse` function fails even before we attempt to evaluate the expression.\n\nLet's fix the parser now.",
+      "line": 16,
+      "title": "Failing test"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "We have a declaration of the `let` expression parser (here called `letin`), but it's definition is.. well.. `undefined`. This is a special value that will satisfy any type declaration, but will terminate the program if it's ever evaluated. This is somewhat similar to the `TODO` function in Kotlin, which is declared to return a value of type Nothing (there is no such value, though, and the `TODO` function never returns).\n\nSimilarly, in Haskell, `undefined` has type `∀a.a` (written `forall a. a`), which (in theory) evaluates to a value of any type (but there is no way to implement this, so `undefined` does not actually return, but terminates the program instead).\n\nWe will replace this not very useful placeholder implementation with a parser for let expressions. Hint: use the `do` notation to sequence your steps (see the [Introduction#25] for a slightly different example).",
+      "line": 76,
+      "title": "Parser"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "Use this convenient inline evaluation notation to 'test' your parser. With a fully completed parser implementation, you should see this evaluated to `Right let id = λx.x in id id`. The `Right` prefix here is due to `parseTerm` returning a value of `Either` type, which can hold either an error or some `Term` constructed by the parser. If an error is returned, you will see `Left` as the prefix instead of `Right`. Try this now to see what it looks like (you can for example insert an unmatched open parenthesis at the beginning of the string: `\"(let id = ...`)\n\nInterestingly, if you attempt to evaluate this expression before completing the parser implementation, you will see `Right let in` (no error). Why is that? What is that `Term` that the parser returned?\n\nUnfortunately, by implementing our `Show` instance for the `Term` data type, we have lost the ability to see the structure of the abstract syntax tree. You can temporarily comment out the `Show` instance (use the `{-` and `-}` delimiters for multi-line comments). Then use the built in `Show` instance in the `deriving` clause on `Term` data type declaration (like this: `deriving (Show, Eq)`).\n\nThen refresh this expression to see what the tree looks like. Can you see now what the parser did?",
+      "line": 79,
+      "title": "Inline test"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "Did you remember to add the new keywords here? If you tried to parse some `let` expressions you may have noticed some very strange results from the parser. This is because the `let` and `in` were supposed to be reserved, but were instead being parsed as identifiers (variable names).\n\nAfter adding the new reserved identifiers, try to refresh the inline test we used before to parse a `let` expression. What happens now? It looks like parser is still being stubborn and parsing the expression the same way as before, but now it's running into the keyword check in the `identifier` parser above. Hint: note the compiler warnings. What is missing so our new `letin` parser is invoked instead?",
+      "line": 51,
+      "title": "Keywords"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "Add the `letin` parser as an alternative in the `term` parser. Run the inline test again.",
+      "line": 62,
+      "title": "Term"
+    },
+    {
+      "file": "src/Interpreter.hs",
+      "description": "Add a new case to the `eval` function to evaluate the `Let` terms. Hint: `let` is an applied lambda.",
+      "line": 29,
+      "title": "Interpreter"
+    },
+    {
+      "file": "test/EvalSpec.hs",
+      "description": "Run the tests again, they should all pass now:\n>> stack test",
+      "line": 16,
+      "title": "Rerun tests"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "Bonus: implement the parser for the declaration form of `let`. This is an example of *syntax sugar*: it adds no new terms and does not increase the expressiveness of our language. In fact, it's possible to use the `let/in` form to replace top level declarations with local declarations and evaluate the entire program as a single expression.\n\nStrictly speaking, our form of `let/in` also does not add expressiveness to the language, in its current form. However, in Hindley-Milner type systems, polymorphic generalisation is usually added to the `let/in` expressions, which then does add new semantics.\n\nSee the presentation for more information on the declaration form of `let`: https://tbodor.github.io/arvo/presentation/lambda.html#/slide-letdecl.",
+      "line": 100,
+      "title": "Declaration let"
+    },
+    {
+      "file": "src/Parser.hs",
+      "description": "Don't forget to add an alternative for the declaration `let` here, to connect it to the rest of the parser.",
+      "line": 103
+    },
+    {
+      "file": "test/test.arvo",
+      "description": "You can test the top level `let` declarations by loading this file from the REPL, using the `:load` command, passing the file path as a parameter. Start the REPL:\n>> stack run\n\nThen type: `:load test/test.arvo`\n\nType the Tab key to see the available completions. Note the global bindings for `s` and `k`. Try typing `s` in the REPL to see what it evaluates to. You can also try `s k k`.",
+      "line": 1,
+      "title": "Examples"
+    },
+    {
+      "file": "test/test1.arvo",
+      "description": "The declaration form of `let` can also be made to support formal parameters on the left hand side of the equals sign. This is the eta-expanded form. Note that there are no λ abstractions on the right hand side anymore, just the body of the lambda abstraction (though it is also possible to mix parameters on the left hand side and lambdas on the right - all on left or all on right, or any combination of the two).\n\nTry to change the parser to support this eta-expanded form. Hint: you can use `many identifier` to parse multiple identifiers into a list of names. Another hint: use `foldr` to construct a chain of `Lambda` terms for each binding.\n\nThis is really beginning to look like something from the ML family of languages (Haskell also belongs here, though it does not use the `let` keyword for top level bindings).",
+      "line": 1,
+      "title": "Eta expansion"
+    }
+  ],
+  "ref": "let-start"
+}
