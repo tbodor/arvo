@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Lambda Calculus</title>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css"/>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/serif.css" id="theme"/>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/../reveal.js-plugins/chalkboard/style.css"/>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/../reveal.js-plugins/customcontrols/style.css"/>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/../reveal.js-menu/menu.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/vs.min.css"/>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide">
+<h2 class="title">Lambda Calculus</h2><em>A gentle introduction</em><br><br><br>
+</section>
+
+<section>
+<section id="slide-history">
+<h2 id="history">A brief history</h2>
+<aside class="notes">
+<p>
+Dana Scott has also addressed this question in various public lectures. Scott recounts that he once posed a question about the origin of the lambda symbol to Church&rsquo;s former student and son-in-law John W. Addison Jr., who then wrote his father-in-law a postcard
+</p>
+
+</aside>
+
+<ul>
+<li class="fragment fade-in">Introduced by Alonzo Church in the 1930s</li>
+<li class="fragment fade-in">Investigation into foundations of mathematics - before computers</li>
+<li class="fragment fade-in">Links to programming only after 1960s</li>
+<li class="fragment fade-in">Church was Alan Turing’s doctoral advisor; lambda calculus predates Turing machines</li>
+<li class="fragment fade-in">Like Turing machine, &lambda;-calculus is a universal model of computation</li>
+
+</ul>
+
+
+<blockquote class="fragment (fade-in)">
+<p>
+Dear Professor Church,
+</p>
+
+<p>
+Russell had the &iota; operator, Hilbert had the &epsilon; operator. Why did you choose &lambda; for your operator?
+</p>
+</blockquote>
+
+
+<blockquote class="fragment (fade-in)">
+<p>
+eeny, meeny, miny, moe
+</p>
+</blockquote>
+</section>
+</section>
+<section>
+<section id="slide-why">
+<h2 id="why">Why?</h2>
+
+<ul>
+<li>Simple, especially compared to Turing machines</li>
+<li>With a little &rsquo;syntax sugar&rsquo; can be turned into real programming languages</li>
+<li>Add types and can restrict to provably correct software, even &rsquo;solve&rsquo; the halting problem</li>
+<li>The principles are familiar to anyone with a basic understanding of algebra</li>
+<li>In essence it&rsquo;s applying a function to arguments, e.g. \(\sqrt{a^2 + b^2}\), for \(a=3\) and \(b=4\)</li>
+<li>In &lambda; calculus this is called &beta;-reduction and is written like this:</li>
+
+</ul>
+
+<p>
+\[
+(\lambda a b . \sqrt{a^2 + b^2}) \enspace 3 \enspace 4
+\]
+</p>
+</section>
+<section id="slide-bf">
+<h4 id="bf">Turing complete you say?</h4>
+<ul>
+<li>An example of another Turing complete language</li>
+<li>Actually simulates a Turing machine, pretty much</li>
+
+</ul>
+
+<p>
+<code>++++++++[&gt;++++[&gt;++&gt;+++&gt;+++&gt;+&lt;&lt;&lt;&lt;-]&gt;+&gt;+&gt;-&gt;&gt;+[&lt;]&lt;-]&gt;&gt;.&gt;---.+++++++..+++.&gt;&gt;.&lt;-.&lt;.+++.------.--------.&gt;&gt;+.&gt;++.</code>
+</p>
+
+<p>
+<a href="https://en.wikipedia.org/wiki/Brainfuck">https://en.wikipedia.org/wiki/Brainfuck</a>
+</p>
+</section>
+</section>
+<section>
+<section id="slide-definition">
+<h2 id="definition">Definition (sort of)</h2>
+
+<ul>
+<li>It&rsquo;s much simpler than that</li>
+<li>There is no \(+\), or \(a^2\), or \(\sqrt{x}\)</li>
+<li>For that matter, there are no numbers 🙂</li>
+<li>Basically: variables, definitions of functions with one parameter, and function calls</li>
+<li>Inductive definition to build all valid lambda terms:
+<ul>
+<li>variable \(x\) is a valid lambda term</li>
+<li>if \(t\) is a lambda term, and \(x\) is a variable, then \(\lambda x.t\) is a lambda term (called an <i>abstraction</i>)</li>
+<li>if \(t\) and \(s\) are lambda terms, then \((t \enspace s)\) is a lambda term (called an <i>application</i>)</li>
+
+</ul></li>
+<li>Nothing else is a lambda term.</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-examples">
+<h2 id="examples">Examples</h2>
+<ul>
+<li>For example: \(\lambda x.x\) takes one parameter \(x\) and returns \(x\) (identity function)</li>
+<li>In more familiar notation, perhaps \(f(x)=x\) in mathematical notation</li>
+<li>Or, in an actual programming language (Kotlin):</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<pre><code class="kotlin" >fun f(x: Any) = x
+</code></pre>
+</div>
+
+<p>
+\[
+(\lambda x.\lambda y.y) ((\lambda x.x x) (\lambda x.x x))
+\]
+</p>
+
+<p>
+\[
+(\lambda f.f (f x)) ((\lambda x.\lambda y.x) (\lambda x.y))
+\]
+</p>
+
+<p>
+\[
+(\lambda f.\lambda x.f (f x)) (\lambda f.\lambda x.f (f x)) (\lambda x.x) (\lambda x.x)
+\]
+</p>
+</section>
+</section>
+<section>
+<section id="slide-conventions">
+<h2 id="conventions">Some Conventions</h2>
+<aside class="notes">
+<p>
+To reduce clutter and remove notation ambiguities
+</p>
+
+</aside>
+
+<ul>
+<li>Parentheses are used for grouping, outermost parentheses are usually dropped: \(M N\) instead of \((M N)\)</li>
+<li>Variables are often single-letter and the space in applications is omitted: \(MNP\) instead of \(M\ N\ P\)</li>
+<li>Application associates to the left: \(M N P\) means \((M N) P\)</li>
+<li>Abstractions associate to the right and extend as far as possible: \(\lambda x.M N\) means \(\lambda x.(M N)\) and not \((\lambda x.M) N\)</li>
+<li>With consecutive bindings (e.g. \(\lambda x.\lambda y.\lambda z.N\)), we omit all lambdas but the first, and omit all periods but the last (e.g. \(\lambda x y z.N\))</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-evaluation">
+<h2 id="evaluation">Evaluation</h2>
+<aside class="notes">
+<ul>
+<li>&alpha;-conversion: both functions are identity functions, variable name does not matter, they both do the same thing</li>
+<li>Watch for variable shadowing</li>
+<li>Capture avoiding substitution</li>
+
+</ul>
+
+</aside>
+
+<ul>
+<li>It&rsquo;s all Greek&#x2026;</li>
+<li>&alpha;-conversion, &beta;-reduction, &eta;-reduction</li>
+<li>&alpha;-conversion is simple variable renaming: \(\lambda x.x\) is the same as \(\lambda a.a\)</li>
+<li>&beta;-reduction is substitution: \((\lambda x.x + 1)\ 41 \to 41 + 1 \to 42\)</li>
+<li>&eta;-reduction: \(\lambda x.f\ x\) is the same as \(f\) (as long as there is no \(x\) in \(f\))</li>
+<li>Simple, but not trivial: renaming and substitution must not change the meaning</li>
+<li>Evaluation order is not specified, and there are several choices (normal, applicative, by name, by value, by need)</li>
+<li>Some evaluation orders will get stuck for some &lambda; terms, some are more efficient than others</li>
+<li><i>Normal</i> order is guaranteed to &rsquo;work&rsquo;</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-demo1">
+<h2 id="demo1">Demo</h2>
+<aside class="notes">
+<p>
+<a href="https://projectultimatum.org/cgi-bin/lambda">https://projectultimatum.org/cgi-bin/lambda</a>
+</p>
+
+</aside>
+</section>
+</section>
+<section>
+<section id="slide-universal">
+<h2 id="universal">Universal model?</h2>
+<ul>
+<li>So, how is this a universal model of computation?</li>
+<li>It turns out all the usual &rsquo;features&rsquo; of a general purpose language can be added</li>
+<li>The idea is to encode various values and types we are used to as functions</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-boolean">
+<h3 id="boolean">Example: Boolean logic</h3>
+
+<ul>
+<li class="fragment fade-in">For logic, we need to represent two constant values: <i>true</i> and <i>false</i></li>
+<li class="fragment fade-in">And then some predicates and operations on those: e.g. logical <i>not</i>, <i>and</i>, <i>or</i></li>
+<li class="fragment fade-in">In the &lambda; universe there exists only one type of thing - a function</li>
+<li class="fragment fade-in">So, not much choice on how to represent <i>true</i> and <i>false</i>, etc.</li>
+<li class="fragment fade-in"><i>true</i> is then - you guessed it - a function</li>
+<li class="fragment fade-in">\(true = \lambda t.\lambda f.t\)</li>
+<li class="fragment fade-in">\(false = \lambda t.\lambda f.f\)</li>
+<li class="fragment fade-in">\(not_1 = \lambda p.\lambda a.\lambda b.p\ b\ a\)</li>
+<li class="fragment fade-in">\(not_2 = \lambda p.p (\lambda t.\lambda f.f) (\lambda t.\lambda f.t) = \lambda p.p\ false\ true\)</li>
+<li class="fragment fade-in">\(and = \lambda p.\lambda q.p\ q\ p\)</li>
+<li class="fragment fade-in">\(or = \lambda p.\lambda q.p\ p\ q\)</li>
+<li class="fragment fade-in">\(if = \lambda p.\lambda x.\lambda y.p\ x\ y\)</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-wtf">
+<h3 id="wtf">WTF?</h3>
+<ul>
+<li>How can this possibly work?</li>
+<li><p>
+For example, let&rsquo;s look at evaluating \(not\ true\)
+</p>
+<div>
+\begin{align*}
+not_{1}\ true &= (\lambda p.\lambda a.\lambda b.p\ b\ a)(\lambda a.\lambda b.a) \\
+              &=\lambda a.\lambda b.(\lambda a.\lambda b.a)\ b\ a \\
+              &=\lambda a.\lambda b.(\lambda c.b)\ a \\
+              &=\lambda a.\lambda b.b \\
+              &= false
+\end{align*}
+
+</div></li>
+
+</ul>
+
+
+<aside class="notes">
+<p>
+(\p.\a.\b.p b a) (\a.\b.a)
+<a href="https://projectultimatum.org/cgi-bin/lambda?t=(%CE%BBp.%CE%BBa.%CE%BBb.p%20b%20a)%20(%CE%BBa.%CE%BBb.a)&amp;r=%5B(Beta),DDL(Alpha),DDL(Beta),DD(Beta)%5D&amp;m=any%20order">https://projectultimatum.org/cgi-bin/lambda?t=(%CE%BBp.%CE%BBa.%CE%BBb.p%20b%20a)%20(%CE%BBa.%CE%BBb.a)&amp;r=%5B(Beta),DDL(Alpha),DDL(Beta),DD(Beta)%5D&amp;m=any%20order</a>
+</p>
+
+</aside>
+</section>
+</section>
+<section>
+<section id="slide-numbers">
+<h3 id="numbers">Numbers</h3>
+<ul>
+<li class="fragment fade-in">You guessed it, also functions</li>
+<li class="fragment fade-in">Using so called Church encoding, or Church numerals</li>
+<li class="fragment fade-in">Count function applications</li>
+<li class="fragment fade-in">\(0 = \lambda f.\lambda x.x\)</li>
+<li class="fragment fade-in">\(1 = \lambda f.\lambda x.f\  x\)</li>
+<li class="fragment fade-in">\(2 = \lambda f.\lambda x.f\ (f\  x)\)</li>
+<li class="fragment fade-in">\(3 = \lambda f.\lambda x.f\ (f\ (f\  x))\)</li>
+<li class="fragment fade-in">On these can define the usual operations: \(+\), \(\times\), etc.</li>
+<li class="fragment fade-in">The idea:
+<ul>
+<li>\(n+1\) (<i>successor</i>) is &ldquo;one more&rdquo; application of \(f\): \(\lambda n.\lambda f.\lambda x.f\ (n f x)\)</li>
+<li>\(m+n\) (<i>addition</i>) is &ldquo;n successors of m&rdquo;: \(\lambda m.\lambda n.\lambda f.\lambda x.m\  f\ (n f x)\)</li>
+
+</ul></li>
+<li class="fragment fade-in">However, Church arithmetic by hand considered a cruel and unusual punishment, so will stop here</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-recursion">
+<h3 id="recursion">Recursion (or: how to twist one&rsquo;s mind into a pretzel)</h3>
+<ul>
+<li class="fragment fade-in">Can&rsquo;t be universal without some way of looping</li>
+<li class="fragment fade-in">There are no labels, no &ldquo;go to&rdquo;, has to be recursion</li>
+<li class="fragment fade-in">What would &rsquo;looping&rsquo; even look like?</li>
+<li class="fragment fade-in">Infinite loop is easy</li>
+<li class="fragment fade-in">The \(\Omega\) combinator: \(((\lambda x.x x) (\lambda x.x x))\)
+<ul>
+<li>Right hand side is the parameter passed to the function on the left</li>
+<li>Each &beta;-reduction step substitutes the right hand side &lambda; term into the \((x x)\) on the left</li>
+<li>Results in the same term again</li>
+
+</ul></li>
+<li class="fragment fade-in">But we need a way to evaluate a function multiple times until it reaches a &rsquo;stable&rsquo; point</li>
+<li class="fragment fade-in">This is called a <i>fixed point</i>, and the &lambda; term is the <i>fixed-point combinator</i>, often called \(Y\)</li>
+<li class="fragment fade-in">The \(Y\) combinator: \(\lambda g.(\lambda x.g\  (x\  x)) (\lambda x.g\  (x\  x))\)</li>
+<li class="fragment fade-in">For a wonderful description of deriving the Y combinator (and much more), read <i>The Little Schemer</i> book</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-eop1">
+<h2 id="eop1">End of Part 1</h2>
+<ul>
+<li>Watch this space for Part 2 in the near future - for the brave</li>
+<li>Implementing a &lambda; calculus evaluator</li>
+<li>Simply typed lambda calculus (STLC)</li>
+<li>Higher Order Abstract Syntax (HOAS)</li>
+<li>Normalisation by Evaluation (NbE)</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-before">
+<h2 id="before">Before we start</h2>
+<ul>
+<li>Get the starter project: git clone <a href="https://github.com/tbodor/arvo.git">https://github.com/tbodor/arvo.git</a></li>
+<li>Read and follow instructions in the README.md</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-part2" data-auto-animate>
+<h2 id="part2">Part 2</h2>
+<p>
+\(
+\renewcommand{\t}[1]{\mathtt{#1}}
+\newcommand{\infrule}[2]{\displaystyle \dfrac{#1}{#2}}
+\newcommand{\trule}[1]{(\textbf{#1})}
+\)
+</p>
+
+
+<blockquote>
+<p>
+In any language design, the total time spent discussing a feature in this list
+is proportional to two raised to the power of its position.
+</p>
+<ol>
+<li value="0">Semantics</li>
+<li>Syntax</li>
+<li>Lexical syntax</li>
+<li>Lexical syntax of comments</li>
+
+</ol>
+</blockquote>
+</section>
+</section>
+<section>
+<section id="slide-wadler" data-auto-animate>
+<h3 id="wadler">Wadler&rsquo;s law</h3>
+<blockquote>
+<p>
+In any language design, the total time spent discussing a feature in this list
+is proportional to two raised to the power of its position.
+</p>
+<ol>
+<li value="0">Semantics - \(2^0\)</li>
+<li>Syntax - \(2^1\)</li>
+<li>Lexical syntax - \(2^2\)</li>
+<li>Lexical syntax of comments - \(2^3\)</li>
+
+</ol>
+</blockquote>
+</section>
+</section>
+<section>
+<section id="slide-terms">
+<h3 id="terms">Revision</h3>
+<ul>
+<li><p>
+Lambda terms: variables, abstraction, application
+</p>
+<div>
+\begin{aligned}
+t :=\ & x             & (\textbf{Var}) \\
+      & \lambda x. t  & (\textbf{Lam}) \\
+      & t\ t          & (\textbf{App}) \\
+\end{aligned}
+
+</div></li>
+
+<li>Lambda abstraction binds one variable, but for convenience: \(\lambda xy.z = \lambda x. \lambda y.z\)</li>
+<li>Application associates to the left: \(x y z = (x y)z\), not: \(x(y z)\)</li>
+<li>Variables can be <i>bound</i> or <i>free</i></li>
+<li>A term with free variables is an <i>open term</i>: \(a\) is free and \(x\) is bound in open term \(\lambda x. ax\)</li>
+<li>A term with all variables bound, is <i>closed</i> or a <i>combinator</i>: both \(x\) and
+\(y\) are bound in combinator \(\lambda xy.x\) (also called the <b>K</b> combinator)</li>
+<li>Nested lambda abstractions can bind the same variable name (shadowing)</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-ski">
+<h3 id="ski">SKI Combinators</h3>
+<ul>
+<li><p>
+Some interesting combinators:
+</p>
+<div>
+\begin{aligned}
+\textbf{S} &= \lambda f .( \lambda g .( \lambda x. f x ( g x ) ) ) \\
+\textbf{K} &= \lambda x . \lambda y. x \\
+\textbf{I} &= \lambda x.x \\
+\end{aligned}
+
+</div></li>
+<li>All closed lambda terms can be expressed in terms of only two combinators: <b>S</b> and <b>K</b></li>
+<li><p>
+Even the <b>I</b> combinator is simply <b>SKK</b>
+</p>
+<div>
+\begin{aligned}
+&\textbf{S} \textbf{K} \textbf{K}\\
+&= ((\lambda xyz.x z (y z)) (\lambda xy.x) (\lambda xy.x)) \\
+&= ((\lambda yz.(\lambda xy.x) z (y z)) ( \lambda xy.x)) \\
+&= \lambda  z.(\lambda xy.x) z ((\lambda xy.x) z) \\
+&= \lambda  z.(\lambda y.z) ((\lambda xy.x) z) \\
+&= \lambda  z.z \\
+&= \textbf{I}\\
+\end{aligned}
+
+</div></li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-evaluation2">
+<h3 id="evaluation2">Evaluation</h3>
+<ul>
+<li>A lambda term \((\lambda x.e) a\) is evaluated by substituting all (free!) occurrences of \(x\) in \(e\) by the argument \(a\)</li>
+<li>A single substitution step is called a (&beta;) reduction</li>
+<li>Written:
+\[
+        (\lambda x. e) a \to [x / a] e
+        \]</li>
+
+<li><p>
+Formally:
+</p>
+<div>
+\begin{aligned}
+& [x/a] x          &=& \ a\\
+& [x/a] y          &=& \ y & \text{if}\ x\neq y\\
+& [x/a]ee'         &=& \ ([x/a]e)([x/a]e')\\
+& [x/a]\lambda x.e &=& \ \lambda x.e\\
+& [x/a]\lambda y.e &=& \ \lambda y.[x/a]e & \text{if}\ x \neq y\ \text{and}\ y \notin\mathtt{fv}(a)
+\end{aligned}
+
+</div>
+
+<p>
+where \(\mathtt{fv}(e)\) is the set of free variables in \(e\).
+</p></li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-substitution">
+<h3 id="substitution">Substitution</h3>
+<ul>
+<li>Substitution is tricky!</li>
+<li>Fundamentally, the issue is to avoid <i>name capture</i>, or conflictsa, causing substitution to change the expression meaning:
+\[
+  [y / x] (\lambda x.xy)  \to  \lambda x.xx
+  \]</li>
+
+<li>We want <b>capture-avoiding</b> substitution &#x2013; substitute only if variable is not free in an expression
+\[
+  (\lambda x. e) a \to [x / a] e \quad \text{if}\ x \notin \mathtt{fv}(a)
+  \]</li>
+
+<li>For free variables we need to create fresh variables (rename)</li>
+<li>Easy to implement incorrectly even for experts!</li>
+<li>In fact, we will avoid substitution altogether</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-equivalence">
+<h3 id="equivalence">Equivalence</h3>
+<ul>
+<li>Alpha (&alpha;) equivalence: changing the bound variable name in the binder and
+throughout the body does not change the meaning of the expression
+\[
+  (\lambda x.e) \overset{\alpha} = (\lambda y. [x / y] e)
+  \]</li>
+
+<li>Such renamed expressions are called <i>alpha-equivalent</i>
+\[
+  \lambda x y.  x y \quad \overset{\alpha} = \quad \lambda a b . a b
+  \]</li>
+
+<li>Beta (&beta;) reduction is a single substitution step, replacing a bound
+variable with the argument throughtout the body of the lambda abstraction
+\[
+  (\lambda x.a) y  \overset{\beta}{\rightarrow}  [x / y] a
+  \]</li>
+
+<li>Eta (&eta;) reduction and expansion (ignoring for now)</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-strategies">
+<h3 id="strategies">Evaluation strategies</h3>
+<ul>
+<li>Evaluation proceeds by beta reduction</li>
+<li>Order matters, so different strategies exist. Here are some of the most common:
+<dl>
+<dt>Call-by-value</dt><dd>arguments are evaluated before a function is entered</dd>
+<dt>Call-by-name</dt><dd>arguments are passed unevaluated</dd>
+<dt>Call-by-need</dt><dd>arguments are passed unevaluated but an expression is only evaluated once and
+shared upon subsequent references (memoisation, assumes pure computations)</dd>
+
+</dl></li>
+<li>Most other programming languages are using call by value (but Haskell is lazy, so call by need)</li>
+<li>C# can simulate call by name using delegates or Expression parameters, Java/Kotlin can use lambda expressions to delay computation</li>
+<li>Repeated call by name, outer most first substitution (&beta;-reduction) is <i>normal order</i> evaluation, produces <i>normal forms</i></li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-cbv">
+<h3 id="cbv">Call by value</h3>
+<ul>
+<li>Using call by value avoids most of the substitution complexities</li>
+<li>Arguments are fully evaluated before evaluating the body of a function, so no
+chance of accidental name capture</li>
+<li><p>
+For example, consider an expression in lambda calculus extended with natural
+numbers and addition. Note that expression \((2+2)\) is evaluated to normal
+form before being bound.
+</p>
+<div>
+\begin{aligned}
+(\lambda x. \lambda y. y x) (2 + 2) (\lambda x. x + 1)
+& => (\lambda x. \lambda y. y x) 4 (\lambda x. x + 1) \\
+& => (\lambda y. y 4) (\lambda x. x + 1) \\
+& => (\lambda x. x + 1) 4 \\
+& => 4 + 1 \\
+& => 5 \\
+\end{aligned}
+
+</div></li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-cbv_rules">
+<h3 id="cbv_rules">Evaluation rules</h3>
+<div>
+\begin{array}{cl}
+ \displaystyle \frac{e_1 \to e_1'}{e_1 e_2 \to e_1' e_2} & \trule{App1} \\ \\
+ \displaystyle \frac{e_2 \to e_2'}{v_1 e_2 \to v_1 e_2'} & \trule{App2} \\ \\
+ \displaystyle {(\lambda x . e) v \to [x / v] e } & \trule{AppLam} \\ \\
+\end{array}
+
+</div>
+</section>
+</section>
+<section>
+<section id="slide-interpreter">
+<h3 id="interpreter">Interpreter</h3>
+<aside class="notes">
+<ul>
+<li>Abstract syntax: does not contain all the details of the source text (concrete syntax)</li>
+<li>Retains structure, (generally) throws away white space, comments, merges parse tree nodes, etc.</li>
+<li>Tree structure implies subexpression relation</li>
+<li>Typically operator precedence and grouping (parentheses) are already resolved</li>
+<li>Variables represented by an identifier, same identifier implies relation between the binding and use</li>
+<li>Higher order abstract syntax will also abstract variable bindings (no names, use is a direct reference to the binding site)</li>
+<li>Programs represented in HOAS are already alpha equivalent</li>
+
+</ul>
+
+</aside>
+
+<ul>
+<li>Interpreter is a program, programs operate on data</li>
+<li>Need to represent lambda calculus terms as data</li>
+<li>Abstract syntax tree</li>
+<li>What does it abstract over?</li>
+<li>Tree structure implies subexpression relation</li>
+<li>Operator precendence and gouping (parentheses) are already resolved</li>
+<li><p>
+In Haskell, we might represent lambda calculus terms like this:
+</p>
+<div style="display: grid; grid-template-columns: auto auto;">
+<div>
+\begin{aligned}
+t :=\ & x             & (\textbf{Var}) \\
+      & \lambda x. t  & (\textbf{Lam}) \\
+      & t\ t          & (\textbf{App}) \\
+\end{aligned}
+
+</div>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >  data Term
+    = Var String
+    | Lam String Term
+    | App Term Term
+</code></pre>
+</div>
+</div></li>
+
+<li>Speaking of Haskell&#x2026;</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-haskell">
+<h3 id="haskell">Haskell</h3>
+<ul>
+<li>Statically-typed purely functional language with lazy evaluation</li>
+<li>Types are checked (and inferred) at compile time</li>
+<li>Pure means that functions do not have side effects</li>
+<li>Lazy means that evaluation of function parameters is delayed until they are needed</li>
+<li><p>
+Hello world
+</p>
+<div class="org-src-container">
+
+<pre><code class="haskell" >  main :: IO ()
+  main = putStrLn "Hello world"
+</code></pre>
+</div></li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-ttfm">
+<h3 id="ttfm">But&#x2026; I&rsquo;m scared of monads</h3>
+<ul>
+<li class="fragment fade-in">A monad is just a monoid in the category of endofunctors. So what&rsquo;s the big deal?</li>
+<li class="fragment fade-in">Introducing a language metric: TTFM - Time To First Monad</li>
+<li class="fragment fade-in">Or: how much code will you see or write in a language before the first monad shows up?</li>
+<li class="fragment fade-in"><p>
+Too late&#x2026;
+</p>
+<div class="org-src-container">
+
+<pre><code class="haskell" >  main :: IO ()
+  main = putStrLn "Hello world"
+</code></pre>
+</div></li>
+
+</ul>
+
+<div id="org3cf9f02" class="figure">
+<p><img src="./images/io.png" alt="io.png" class="fragment (fade-in)" />
+</p>
+</div>
+</section>
+</section>
+<section>
+<section id="slide-code_interpreter">
+<h2 id="code_interpreter">Code</h2>
+<aside class="notes">
+<ul>
+<li>Abstract syntax tree - Term</li>
+<li>Names and environments</li>
+<li>Evaluator - show slides on semantics</li>
+<li>Parser</li>
+<li>Simple repl</li>
+<li>Normalisation</li>
+<li>Safer normalisation</li>
+
+</ul>
+
+</aside>
+
+<p>
+Interpreter for untyped lambda calculus
+</p>
+</section>
+</section>
+<section>
+<section id="slide-semantics">
+<h2 id="semantics">Semantics</h2>
+<ul>
+<li>Structural or small-step operational semantics</li>
+<li>Behavior defined in terms of the behavior of its parts</li>
+<li><p>
+Structural, syntax-oriented and inductive
+</p>
+<div>
+\begin{array}{cl}
+ \displaystyle \frac{e_1 \to e_1'}{e_1 e_2 \to e_1' e_2} & \trule{App1} \\ \\
+ \displaystyle \frac{e_2 \to e_2'}{v_1 e_2 \to v_1 e_2'} & \trule{App2} \\ \\
+ \displaystyle {(\lambda x . e) v \to [x / v] e } & \trule{AppLam} \\ \\
+\end{array}
+
+</div></li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-sem_reduction">
+<h3 id="sem_reduction">Reduction semantics</h3>
+<ul>
+<li>Given as a set of (reduction) rules</li>
+<li>Each rule is a single reduction step</li>
+<li>The rules are applied in an evaluation context</li>
+<li><p>
+Evaluation context for CBV &lambda; calculus, extended with a let expression:
+</p>
+
+<p>
+\(
+  \mathcal{E}\ ::=\ []\ |\ v\ \mathcal{E}\ |\ \mathcal{E}\ e\ |\ \mathtt{let}\ x = v\ \mathtt{in}\ \mathcal{E}
+  \)
+</p></li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-sem_axiomatic">
+<h3 id="sem_axiomatic">Axiomatic semantics</h3>
+<ul>
+<li>Defines the meaning of a command in a program by describing its effect on assertions about the program state</li>
+<li>The assertions are logical statements (predicates with variables) where the variables define the state of
+the program.</li>
+<li>Used in proving the correctness of programs</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-sem_denotation">
+<h3 id="sem_denotation">Denotational semantics</h3>
+<ul>
+<li>The meanings formalised by constructing mathematical objects (denotations)</li>
+<li>For example a program can be modelled as a function from input to output</li>
+<li>Lambda abstraction is a function &rsquo;definition&rsquo;, application is a function call</li>
+<li><p>
+Very interesting, but - some other time&#x2026;
+</p>
+<div>
+\begin{align*}
+[\![\_]\!]               & \in Exp \to [Env \to D] \\
+[\![v_i]\!] (\rho)       & = \rho(i) \\
+[\![\lambda t]\!] (\rho) & = Abs(f)                             & where\ f(d) = [\![t]\!](\rho, d) \\
+[\![r\ s]\!] (\rho)      & = [\![r]\!]\rho \cdot [\![s]\!]\rho  & \_ \cdot \_ \in [D \to [D \to D]] \\
+\end{align*}
+
+</div></li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-let">
+<h2 id="let">Extension</h2>
+<ul>
+<li>Extend the interpreter to support <code>let</code> expressions
+\[
+  \mathtt{let}\ a = e\ \mathtt{in}\ b \quad := \quad (\lambda a.b) e
+  \]</li>
+
+<li><p>
+For now, semantically the same as an <i>applied</i> lambda
+</p>
+
+<div>
+\begin{array}{clll}
+(\lambda x. e) v     & \rightarrow & [x/v] e                   & \trule{Lam} \\
+\mathtt{let} \ x = v \ \mathtt{in} \ e & \rightarrow & [x/v] e & \trule{Let} \\
+\end{array}
+
+</div></li>
+
+<li>We will need a more powerful parser; check out the <code>let-start</code> branch to use as a starting point</li>
+<li>Note that <code>let</code> in Haskell has different semantics - more on this later</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-letdecl">
+<h2 id="letdecl">Extension</h2>
+<ul>
+<li>Tedious to always have to type the full expression</li>
+<li>Extend the interpreter to support <code>let</code> expressions, optionally terminated by semicolon
+\[
+  \mathtt{let}\ a = e; \quad := \quad \lambda a.e
+  \]</li>
+
+<li><p>
+Semantically the same as a lambda, optionally &eta;-expanded
+</p>
+
+<p>
+\[
+  \mathtt{let}\ if\ cond\ then\ else\ =\ ... \quad := \quad \mathtt{let}\ if = \lambda cond.\lambda then.\lambda else.\ ...
+  \]
+</p></li>
+
+<li>Check out the <code>let</code> branch to use as a starting point</li>
+<li>Note that in Haskell top level declarations do not use the <code>let</code> keyword</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-demo_lc">
+<h2 id="demo_lc">Demo</h2>
+<aside class="notes">
+<ul>
+<li>Booleans</li>
+<li>Natural numbers</li>
+<li>Comparisons</li>
+<li>Recursion</li>
+<li>Factorial</li>
+<li>Self evaluator</li>
+
+</ul>
+
+</aside>
+</section>
+</section>
+<section>
+<section id="slide-correctness">
+<h2 id="correctness">Correctness?</h2>
+<ul>
+<li>Eval is partial, can fail or get stuck (non-termination)</li>
+<li>Need some way of rejecting problematic expressions</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-type_system">
+<h2 id="type_system">Type System</h2>
+<blockquote>
+<p>
+<b>[A type system is a] tractable syntactic method for proving the
+absence of certain program behaviors by classifying phrases
+according to the kinds of values they compute.</b>
+— Benjamin Pierce
+</p>
+</blockquote>
+</section>
+</section>
+<section>
+<section id="slide-hm">
+<h3 id="hm">Hindley-Milner type inference</h3>
+<p>
+What part of &#x2026;
+</p>
+
+<div>
+\begin{array}{cl}
+ \displaystyle\frac{x:\sigma \in \Gamma}{\Gamma \vdash x:\sigma} & \trule{T-Var} \\
+ \displaystyle\frac{\Gamma \vdash e_1:\tau_1 \rightarrow \tau_2 \quad\quad \Gamma \vdash e_2 : \tau_1 }{\Gamma \vdash e_1\ e_2 : \tau_2} & \trule{T-App} \\
+ \displaystyle\frac{\Gamma,\;x:\tau_1 \vdash e:\tau_2}{\Gamma \vdash \lambda\ x\ .\ e : \tau_1 \rightarrow \tau_2}& \trule{T-Lam} \\
+ \displaystyle\frac{\Gamma \vdash e_1:\sigma \quad\quad \Gamma,\,x:\sigma \vdash e_2:\tau}{\Gamma \vdash \mathtt{let}\ x = e_1\ \mathtt{in}\ e_2 : \tau} & \trule{T-Let} \\
+ \displaystyle\frac{\Gamma \vdash e: \sigma \quad \overline{\alpha} \notin \mathtt{ftv}(\Gamma)}{\Gamma \vdash e:\forall\ \overline{\alpha}\ .\ \sigma} & \trule{T-Gen}\\
+ \displaystyle\frac{\Gamma \vdash e: \sigma_1 \quad\quad \sigma_1 \sqsubseteq \sigma_2}{\Gamma \vdash e : \sigma_2 } & \trule{T-Inst} \\
+\end{array}
+
+</div>
+
+<p>
+&#x2026; do you not understand?
+</p>
+</section>
+</section>
+<section>
+<section id="slide-judgements">
+<h3 id="judgements">Reading type judgements</h3>
+<div>
+\begin{array}{cl}
+ \displaystyle\frac{x:\sigma \in \Gamma}{\Gamma \vdash x:\sigma} & \trule{T-Var}
+\end{array}
+
+</div>
+
+<ul>
+<li>It&rsquo;s essentially a logical statement, an implication, an if-then</li>
+<li>The entire thing is a <b>rule</b>, \(\textbf{T-Var}\) is the name of the rule</li>
+<li>\(\Gamma \vdash x:\sigma\) is a <b>judgement</b>, a proposition</li>
+<li>\(\Gamma\) is the <b>context</b> (pronounced gamma), \(x\) is the <b>term</b> (in this case a variable term), \(\sigma\) is the
+<b>type</b> (actually type scheme here)</li>
+<li>\(\vdash\) is sometimes called the turnstile, but has no meaning on its own</li>
+<li>Judgement here is a three argument relation \(\_ \vdash \_ : \_\) and means: the expression x has type tau in context gamma</li>
+<li>The rule means: <b>if</b> \(x:\sigma \in \Gamma\) <b>then</b> \(\Gamma \vdash x:\sigma\)</li>
+<li>Or, sometimes, read from the bottom: <b>to prove</b> \(\Gamma \vdash x:\sigma\) <b>you need to show</b> \(x:\sigma \in \Gamma\)</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-hm1">
+<h3 id="hm1">Monomorphic type inference</h3>
+<p>
+Ignoring polymorphism for now, omitting the Gen and Inst rules:
+</p>
+
+<div>
+\begin{array}{cl}
+ \displaystyle\frac{x:\sigma \in \Gamma}{\Gamma \vdash x:\sigma} & \trule{T-Var} \\ \\
+ \displaystyle\frac{\Gamma \vdash e_1:\tau_1 \rightarrow \tau_2 \quad\quad \Gamma \vdash e_2 : \tau_1 }{\Gamma \vdash e_1\ e_2 : \tau_2} & \trule{T-App} \\ \\
+ \displaystyle\frac{\Gamma,\;x:\tau_1 \vdash e:\tau_2}{\Gamma \vdash \lambda\ x\ .\ e : \tau_1 \rightarrow \tau_2}& \trule{T-Lam} \\ \\
+ \displaystyle\frac{\Gamma \vdash e_1:\sigma \quad\quad \Gamma,\,x:\sigma \vdash e_2:\tau}{\Gamma \vdash \mathtt{let}\ x = e_1\ \mathtt{in}\ e_2 : \tau} & \trule{T-Let} \\ \\
+\end{array}
+
+</div>
+</section>
+</section>
+<section>
+<section id="slide-code_types">
+<h2 id="code_types">Code</h2>
+<blockquote>
+<p>
+<b>Well-typed programs cannot &ldquo;go wrong&rdquo;.</b>
+— Robin Milner
+</p>
+</blockquote>
+</section>
+</section>
+<section>
+<section id="slide-eop2">
+<h2 id="eop2">End of Part 2</h2>
+<ul>
+<li>Watch this space for Part 3 in the near future - for the daredevils</li>
+<li>Higher Order Abstract Syntax (HOAS)</li>
+<li>Parametric Higher Order Abstract Syntax (PHOAS)</li>
+<li>Tagless final</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-questions">
+<h2 id="questions">Questions? Comments? Complaints?</h2>
+</section>
+</section>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/zoom/zoom.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/../reveal.js-plugins/chalkboard/plugin.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/../reveal.js-plugins/customcontrols/plugin.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/../reveal.js-menu/menu.js"></script>
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: true,
+center: true,
+slideNumber: 'c',
+rollingLinks: false,
+keyboard: true,
+mouseWheel: false,
+fragmentInURL: false,
+hashOneBasedIndex: true,
+pdfSeparateFragments: true,
+overview: true,
+width: 1680,
+height: 1080,
+maxScale: 1.00,
+
+transition: 'slide',
+transitionSpeed: 'fast',
+
+// Plugins with reveal.js 4.x
+plugins: [ RevealHighlight, RevealNotes, RevealZoom, RevealChalkboard, RevealCustomControls, RevealMenu ],
+
+// Optional libraries used to extend reveal.js
+dependencies: [
+]
+
+});
+</script>
+</body>
+</html>
